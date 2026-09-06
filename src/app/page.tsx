@@ -22,10 +22,13 @@ import { HeroImageFader } from "@/components/site/hero-image-fader";
 import { Waves } from "@/components/site/waves";
 import { Stat } from "@/components/site/stat";
 import { ProgramCard } from "@/components/site/program-card";
+import { AnnouncementsSection } from "@/components/site/announcements-section";
+import { TestimonialsSection } from "@/components/site/testimonials-section";
 import { IMPACT_STATS } from "@/lib/data/impact";
 import { PROGRAMS } from "@/lib/data/programs";
 import { ORG } from "@/lib/site";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   description:
@@ -97,7 +100,20 @@ const HOW_IT_WORKS = [
 
 export default async function HomePage() {
   const supabase = await getSupabaseServerClient();
-  const { data: homeData } = await supabase?.from("site_content").select("content").eq("page_slug", "home").single() || { data: null };
+
+  const { data: announcementsData } = await supabase
+    ?.from("announcements")
+    .select("*")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(6) || { data: [] };
+
+  const { data: testimonialsData } = await supabase
+    ?.from("testimonials")
+    .select("*")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(6) || { data: [] };
 
   const defaultContent = {
     hero: {
@@ -137,7 +153,7 @@ export default async function HomePage() {
     },
   };
 
-  const content = homeData?.content ? { ...defaultContent, ...homeData.content } : defaultContent;
+  const content = await getSiteContent("home", defaultContent);
 
   const featured = PROGRAMS.filter((p) => p.status === "Active").slice(0, 3);
 
@@ -299,6 +315,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Latest Announcements ────────────────────── */}
+      <AnnouncementsSection items={announcementsData || []} />
+
       {/* ── Philosophy quote ─────────────────────────── */}
       <section aria-label="Our philosophy" className="relative overflow-hidden bg-forest-950 py-16 sm:py-20">
         <Waves className="pointer-events-none absolute inset-0 h-full w-full opacity-40" />
@@ -312,6 +331,9 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+
+      {/* ── Testimonials ─────────────────────────────── */}
+      <TestimonialsSection testimonials={testimonialsData || []} />
 
       {/* ── CTA ──────────────────────────────────────── */}
       <section aria-labelledby="join-cta" className="bg-cream py-20 sm:py-24">

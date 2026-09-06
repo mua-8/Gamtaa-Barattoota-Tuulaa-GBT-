@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
       supabase.from("programs").select("id", { count: "exact", head: true }).neq("status", "draft"),
       supabase.from("gallery_items").select("id", { count: "exact", head: true }),
       supabase.from("team_members").select("id", { count: "exact", head: true }),
-      supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "unread"),
+      supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "new"),
     ]);
 
     const getDisplayValue = (res: any) => {

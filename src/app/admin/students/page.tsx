@@ -22,18 +22,23 @@ export default async function AdminStudentsPage() {
   const supabase = await getSupabaseServerClient();
   if (!supabase) return null;
 
-  // We fetch students with their profiles
+  // We fetch students with their user profile and application status
   const { data: students } = await supabase
     .from("student_profiles")
     .select(`
       id,
       university,
       department,
-      status,
+      student_id,
       profiles (
         full_name,
         email,
         phone
+      ),
+      applications (
+        id,
+        status,
+        submitted_at
       )
     `)
     .order("created_at", { ascending: false })
@@ -88,37 +93,68 @@ export default async function AdminStudentsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                students?.map((student: any) => (
-                  <TableRow key={student.id}>
-                    <TableCell>
-                      <div className="font-medium text-forest-950">
-                        {student.profiles?.full_name || "Unknown"}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {student.profiles?.email}
-                      </div>
-                    </TableCell>
-                    <TableCell>{student.university}</TableCell>
-                    <TableCell>{student.department}</TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant="secondary"
-                        className={
-                          student.status === "active" 
-                            ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" 
-                            : "bg-amber-100 text-amber-800 hover:bg-amber-100"
-                        }
-                      >
-                        {student.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="sm" className="text-forest-700">
-                        <Link href={`/admin/students/${student.id}`}>View</Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
+                students?.map((student: any) => {
+                  const latestApp = Array.isArray(student.applications) 
+                    ? student.applications[0] 
+                    : student.applications;
+                  const status = latestApp?.status || "registered";
+
+                  const getBadge = () => {
+                    switch (status) {
+                      case "approved":
+                        return (
+                          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-transparent font-medium">
+                            Approved Volunteer
+                          </Badge>
+                        );
+                      case "pending":
+                        return (
+                          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-transparent font-medium">
+                            Pending Application
+                          </Badge>
+                        );
+                      case "under_review":
+                        return (
+                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-transparent font-medium">
+                            Under Review
+                          </Badge>
+                        );
+                      case "rejected":
+                        return (
+                          <Badge className="bg-red-100 text-red-800 hover:bg-red-100 border-transparent font-medium">
+                            Rejected
+                          </Badge>
+                        );
+                      default:
+                        return (
+                          <Badge variant="outline" className="text-muted-foreground">
+                            Registered
+                          </Badge>
+                        );
+                    }
+                  };
+
+                  return (
+                    <TableRow key={student.id}>
+                      <TableCell>
+                        <div className="font-medium text-forest-950">
+                          {student.profiles?.full_name || "Unknown"}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {student.profiles?.email}
+                        </div>
+                      </TableCell>
+                      <TableCell>{student.university || "Not set"}</TableCell>
+                      <TableCell>{student.department || "Not set"}</TableCell>
+                      <TableCell>{getBadge()}</TableCell>
+                      <TableCell className="text-right">
+                        <Button asChild variant="ghost" size="sm" className="text-forest-700">
+                          <Link href={`/admin/students/${student.id}`}>View</Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>

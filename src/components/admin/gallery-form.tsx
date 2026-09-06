@@ -87,6 +87,7 @@ export function GalleryForm({ initialData, id }: { initialData?: Partial<Gallery
                 const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
                 const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
                 const supabase = getSupabaseBrowserClient();
+                if (!supabase) throw new Error("Supabase client not initialized");
                 const { error: uploadError } = await supabase.storage.from('gallery').upload(fileName, file);
                 if (uploadError) throw uploadError;
                 const { data } = supabase.storage.from('gallery').getPublicUrl(fileName);

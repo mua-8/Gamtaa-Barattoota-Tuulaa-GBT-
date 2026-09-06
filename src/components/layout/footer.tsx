@@ -67,6 +67,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/student/dashboard" className="text-forest-100 transition-colors hover:text-gold-300">
+                  Volunteer Portal
+                </Link>
+              </li>
+              <li>
                 <Link href="/join-team" className="text-forest-100 transition-colors hover:text-gold-300">
                   Join as Team
                 </Link>

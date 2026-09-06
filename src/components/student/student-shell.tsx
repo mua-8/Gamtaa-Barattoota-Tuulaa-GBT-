@@ -70,20 +70,20 @@ export function StudentShell({ unread, children }: StudentShellProps) {
       {/* Sidebar (Mobile + Desktop) */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-forest-950 text-forest-100 shadow-xl transition-transform duration-300 lg:translate-x-0 lg:border-r lg:border-forest-800 lg:shadow-none",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-forest-950 text-forest-100 shadow-xl transition-transform duration-300 overflow-hidden lg:translate-x-0 lg:border-r lg:border-forest-800 lg:shadow-none",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between px-4 h-24 lg:hidden border-b border-forest-800">
-          <div><Logo variant="light" /></div>
-          <button onClick={() => setSidebarOpen(false)} className="p-2 text-forest-100 rounded-md hover:bg-forest-900">
+        <div className="flex items-center justify-between px-4 h-20 lg:hidden border-b border-forest-800 overflow-hidden">
+          <div className="min-w-0 overflow-hidden"><Logo variant="light" compact /></div>
+          <button onClick={() => setSidebarOpen(false)} className="p-2 text-forest-100 rounded-md hover:bg-forest-900 shrink-0">
             <X className="h-6 w-6" />
           </button>
         </div>
         
-        <div className="hidden lg:flex h-24 shrink-0 items-center px-6 border-b border-forest-800">
-           <Link href="/student/dashboard" className="focus-visible:outline-ring block">
-             <Logo variant="light" />
+        <div className="hidden lg:flex h-20 shrink-0 items-center px-4 border-b border-forest-800 overflow-hidden">
+           <Link href="/student/dashboard" className="focus-visible:outline-ring flex items-center min-w-0 max-w-full">
+             <Logo variant="light" compact />
            </Link>
         </div>
         
@@ -139,9 +139,21 @@ export function StudentShell({ unread, children }: StudentShellProps) {
             <span className="sr-only">Open sidebar</span>
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
-          <div>
-            <Logo variant="light" />
+          <div className="min-w-0 overflow-hidden">
+            <Logo variant="light" compact />
           </div>
+          <Link
+            href="/student/notifications"
+            className="relative p-2 text-forest-100 hover:bg-forest-900 rounded-md"
+            aria-label="Notifications"
+          >
+            <Bell className="h-5 w-5" />
+            {unread > 0 && (
+              <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold-400 text-[10px] font-bold text-forest-950">
+                {unread}
+              </span>
+            )}
+          </Link>
         </header>
 
         <main className="flex-1 p-6 sm:p-8 lg:p-12 w-full max-w-6xl mx-auto">

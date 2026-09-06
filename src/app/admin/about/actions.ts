@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { saveSiteContent } from "@/lib/site-content";
 
 export async function updateAboutContent(content: any) {
   const supabase = await getSupabaseServerClient();
@@ -20,19 +21,14 @@ export async function updateAboutContent(content: any) {
     return { error: "Unauthorized. Super Admin role required." };
   }
 
-  const { error } = await supabase
-    .from("site_content")
-    .upsert(
-      { page_slug: "about", content },
-      { onConflict: "page_slug" }
-    );
-
-  if (error) {
-    console.error("About content update error:", error);
-    return { error: "Failed to update about content. Please check database permissions." };
+  const result = await saveSiteContent("about", content);
+  if (result.error) {
+    console.error("About content update error:", result.error);
+    return { error: "Failed to update about content: " + result.error };
   }
 
   revalidatePath("/about");
+  revalidatePath("/admin/about");
   
   return { success: true };
 }

@@ -1,6 +1,12 @@
-import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Construction } from "lucide-react";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSiteContent } from "@/lib/site-content";
+import { ContactContentForm } from "./contact-form";
+import { ORG } from "@/lib/site";
+
+export const metadata = {
+  title: "Manage Contact Page | GBT Admin",
+};
 
 export default async function ContactContentPage() {
   const supabase = await getSupabaseServerClient();
@@ -9,17 +15,37 @@ export default async function ContactContentPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const defaultContent = {
+    header: {
+      eyebrow: "Contact",
+      title: "We'd love to hear from you",
+      description: "Whether you're a student who wants to serve, a school that wants a program, or a partner who wants to support us — this is the place to start.",
+    },
+    info: {
+      address: ORG.address,
+      email: ORG.email,
+      phone: ORG.phone,
+      officeHours: "Monday – Saturday, 8:30 – 17:30 (EAT)",
+      responseTime: "We usually reply within two to three working days.",
+    },
+  };
+
+  const initialData = await getSiteContent("contact", defaultContent);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
-      <div className="bg-forest-100 p-6 rounded-full text-forest-600 mb-4">
-        <Construction className="h-16 w-16" />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-forest-950">
+          Contact Page Content
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          Manage the public contact information, organization address, telephone numbers, and office hours.
+        </p>
       </div>
-      <h1 className="text-3xl font-bold tracking-tight text-forest-950">
-        Contact Page Content
-      </h1>
-      <p className="text-lg text-muted-foreground max-w-md">
-        This module is currently under development. Soon you will be able to edit contact page information here.
-      </p>
+
+      <div className="rounded-xl border bg-white p-6 shadow-sm">
+        <ContactContentForm initialData={initialData} />
+      </div>
     </div>
   );
 }

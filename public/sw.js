@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gbt-pwa-cache-v4';
+const CACHE_NAME = 'gbt-pwa-cache-v7';
 
 const STATIC_ASSETS = [
   '/',
@@ -6,6 +6,7 @@ const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
+  '/icons/icon-maskable-512x512.png',
   '/apple-touch-icon.png',
 ];
 
@@ -32,12 +33,13 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Skip caching for Supabase, API routes, Admin, and Student portals
+  // Skip caching for Supabase, API routes, Admin, Student, and Next.js internal resources
   if (
     url.hostname.includes('supabase.co') ||
     url.pathname.startsWith('/api/') ||
     url.pathname.startsWith('/admin') ||
     url.pathname.startsWith('/student') ||
+    url.pathname.startsWith('/_next/') ||
     event.request.method !== 'GET'
   ) {
     return;

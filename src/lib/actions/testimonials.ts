@@ -21,6 +21,8 @@ export async function createTestimonial(payload: TestimonialPayload) {
   if (error) return { error: error.message };
 
   revalidatePath("/admin/testimonials");
+  revalidatePath("/");
+  revalidatePath("/about");
   redirect("/admin/testimonials");
 }
 
@@ -32,6 +34,8 @@ export async function updateTestimonial(id: string, payload: TestimonialPayload)
   if (error) return { error: error.message };
 
   revalidatePath("/admin/testimonials");
+  revalidatePath("/");
+  revalidatePath("/about");
   redirect("/admin/testimonials");
 }
 
@@ -43,5 +47,7 @@ export async function deleteTestimonial(id: string) {
   if (error) return { error: error.message };
 
   revalidatePath("/admin/testimonials");
+  revalidatePath("/");
+  revalidatePath("/about");
   redirect("/admin/testimonials");
 }

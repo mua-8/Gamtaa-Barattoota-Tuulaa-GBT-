@@ -24,27 +24,20 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const supabase = await getSupabaseServerClient();
-  if (!supabase) return [];
-  const { data } = await supabase.from("programs").select("slug").neq("status", "draft");
-  return data?.map((p: { slug: string }) => ({ slug: p.slug })) || [];
-}
-
 function mapProgram(p: any): Program {
   let uiStatus: ProgramStatus = "Active";
   if (p.status === "upcoming") uiStatus = "Upcoming";
   if (p.status === "completed") uiStatus = "Completed";
 
   let img = p.image_url;
-  if (!img || img.includes("default")) {
-    if (p.slug?.includes("summer") || p.slug?.includes("education")) img = "/images/programs/summer-education.jpg";
-    else if (p.slug?.includes("bridge") || p.slug?.includes("mentorship")) img = "/images/programs/mentorship.jpg";
-    else if (p.slug?.includes("digital") || p.slug?.includes("literacy")) img = "/images/programs/digital-literacy.jpg";
-    else if (p.slug?.includes("green") || p.slug?.includes("roots") || p.slug?.includes("service")) img = "/images/programs/community-service.jpg";
-    else if (p.slug?.includes("tolerance") || p.slug?.includes("peace")) img = "/images/programs/tolerance.jpg";
-    else if (p.slug?.includes("leader") || p.slug?.includes("youth")) img = "/images/programs/youth-empowerment.jpg";
-    else img = "/images/programs/summer-education.jpg";
+  if (!img || img.includes("default") || !img.includes("real")) {
+    if (p.slug?.includes("summer") || p.slug?.includes("education")) img = "/images/programs/summer-school-real.jpg";
+    else if (p.slug?.includes("bridge") || p.slug?.includes("mentorship")) img = "/images/programs/mentorship-real.jpg";
+    else if (p.slug?.includes("digital") || p.slug?.includes("literacy")) img = "/images/programs/digital-literacy-real.jpg";
+    else if (p.slug?.includes("green") || p.slug?.includes("roots") || p.slug?.includes("service")) img = "/images/programs/community-service-real.jpg";
+    else if (p.slug?.includes("tolerance") || p.slug?.includes("peace")) img = "/images/programs/tolerance-real.jpg";
+    else if (p.slug?.includes("leader") || p.slug?.includes("youth")) img = "/images/programs/mentorship-real.jpg";
+    else img = "/images/programs/summer-school-real.jpg";
   }
 
   return {

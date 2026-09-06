@@ -31,7 +31,7 @@ export async function getSupabaseServerClient(): Promise<SupabaseClient | null> 
       },
     },
     global: {
-      fetch: (url, options) => {
+      fetch: (url: RequestInfo | URL, options?: RequestInit) => {
         return fetch(url, { ...options, cache: "no-store" });
       },
     },

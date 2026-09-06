@@ -22,5 +22,9 @@ export async function verifyServiceRecord(id: string, status: "verified" | "reje
   if (error) return { error: error.message };
 
   revalidatePath("/admin/service-records");
+  revalidatePath("/student", "layout");
+  revalidatePath("/student/dashboard");
+  revalidatePath("/student/notifications");
+  revalidatePath("/student/service-history");
   return { success: true };
 }

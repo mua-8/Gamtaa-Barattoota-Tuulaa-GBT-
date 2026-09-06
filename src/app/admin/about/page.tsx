@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSiteContent } from "@/lib/site-content";
 import { AboutContentForm } from "./about-form";
 import { ORG } from "@/lib/site";
 
@@ -10,13 +11,6 @@ export const metadata = {
 export default async function AdminAboutPage() {
   const supabase = await getSupabaseServerClient();
   if (!supabase) redirect("/login");
-
-  // Fetch about page content
-  const { data } = await supabase
-    .from("site_content")
-    .select("content")
-    .eq("page_slug", "about")
-    .single();
 
   const defaultContent = {
     header: {
@@ -52,7 +46,7 @@ export default async function AdminAboutPage() {
     },
   };
 
-  const initialData = data?.content ? { ...defaultContent, ...data.content } : defaultContent;
+  const initialData = await getSiteContent("about", defaultContent);
 
   return (
     <div className="space-y-6">

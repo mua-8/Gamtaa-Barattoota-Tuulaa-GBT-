@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { saveSiteContent } from "@/lib/site-content";
 
 export async function updateHomeContent(content: any) {
   const supabase = await getSupabaseServerClient();
@@ -20,20 +21,15 @@ export async function updateHomeContent(content: any) {
     return { error: "Unauthorized. Super Admin role required." };
   }
 
-  const { error } = await supabase
-    .from("site_content")
-    .upsert(
-      { page_slug: "home", content },
-      { onConflict: "page_slug" }
-    );
-
-  if (error) {
-    console.error("Home content update error:", error);
-    return { error: "Failed to update home content. Please check database permissions." };
+  const result = await saveSiteContent("home", content);
+  if (result.error) {
+    console.error("Home content update error:", result.error);
+    return { error: "Failed to update home content: " + result.error };
   }
 
   // Clear cache for the home page
   revalidatePath("/");
+  revalidatePath("/admin/home");
   
   return { success: true };
 }

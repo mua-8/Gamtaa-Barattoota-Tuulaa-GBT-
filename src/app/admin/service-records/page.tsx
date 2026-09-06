@@ -19,7 +19,7 @@ export default async function ServiceRecordsPage() {
     .from("service_records")
     .select(`
       *,
-      profiles ( full_name, email ),
+      student:profiles!service_records_student_id_fkey ( full_name, email ),
       programs ( title )
     `)
     .order("created_at", { ascending: false });
@@ -56,11 +56,16 @@ export default async function ServiceRecordsPage() {
           <TableBody>
             {records && records.length > 0 ? (
               records.map((record) => {
-                const p = Array.isArray(record.profiles) ? record.profiles[0] : record.profiles;
+                const p = record.student;
                 const prog = Array.isArray(record.programs) ? record.programs[0] : record.programs;
                 return (
                   <TableRow key={record.id}>
-                    <TableCell className="font-medium">{p?.full_name || "Unknown"}</TableCell>
+                    <TableCell className="font-medium">
+                      <div>
+                        <div className="font-semibold text-forest-950">{p?.full_name || "Unknown"}</div>
+                        {p?.email && <div className="text-xs text-muted-foreground">{p.email}</div>}
+                      </div>
+                    </TableCell>
                     <TableCell>{record.activity}</TableCell>
                     <TableCell>{prog?.title || "N/A"}</TableCell>
                     <TableCell className="font-bold text-forest-700">{record.hours}</TableCell>

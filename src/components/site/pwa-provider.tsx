@@ -86,17 +86,19 @@ export function PwaProvider() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 sm:left-auto sm:right-4 sm:w-96 rounded-xl border border-border bg-white p-4 shadow-xl animate-in slide-in-from-bottom-5 fade-in duration-300">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-forest-900 text-white">
-            <Download className="h-5 w-5" />
-          </div>
+          <img
+            src="/icons/icon-192x192.png"
+            alt="GBT Emblem"
+            className="h-11 w-11 shrink-0 rounded-xl object-contain border border-gold-500/30 p-0.5 bg-forest-950 shadow-sm"
+          />
           <div>
             <h3 className="text-sm font-bold text-forest-950">Install GBT App</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
               {isIos
-                ? "Tap Share → Add to Home Screen for quick access."
-                : "Add to your home screen for fast, offline access."}
+                ? "Tap Share (⎙) → 'Add to Home Screen' for quick access."
+                : "Install Gamtaa Barattoota Tuulaa for quick access from your device."}
             </p>
           </div>
         </div>
@@ -109,20 +111,22 @@ export function PwaProvider() {
         </button>
       </div>
       {!isIos && (
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-3.5 flex items-center gap-2 pt-1 border-t border-gray-100">
           <Button
             onClick={handleInstall}
             size="sm"
-            className="flex-1 bg-forest-900 text-white hover:bg-forest-800"
+            className="flex-1 bg-forest-900 text-gold-400 hover:bg-forest-800 font-bold"
           >
-            Install
+            Install App
           </Button>
-          <button
+          <Button
             onClick={dismiss}
-            className="flex-1 text-xs text-muted-foreground hover:text-foreground text-center py-2"
+            variant="ghost"
+            size="sm"
+            className="flex-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            Maybe later
-          </button>
+            Not Now
+          </Button>
         </div>
       )}
     </div>

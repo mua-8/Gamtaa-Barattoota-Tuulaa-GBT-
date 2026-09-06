@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BarChart } from "@/components/site/charts";
+import { DashboardNotifications } from "@/components/student/dashboard-notifications";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -114,7 +115,7 @@ export default async function DashboardPage() {
     .order("date");
   const { data: recentNotifications } = await supabase
     .from("notifications")
-    .select("id, title, created_at, read")
+    .select("id, title, message, type, created_at, read")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(4);
@@ -204,37 +205,7 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
-        <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold text-forest-950">Recent notifications</h2>
-            <Link href="/student/notifications" className="text-xs font-bold text-forest-800 underline-offset-4 hover:underline">
-              View all
-            </Link>
-          </div>
-          {(recentNotifications ?? []).length === 0 ? (
-            <p className="mt-4 text-sm text-muted-foreground">Nothing yet — updates land here.</p>
-          ) : (
-            <ul className="mt-4 space-y-3">
-              {(recentNotifications ?? []).map((n) => (
-                <li key={n.id} className="flex items-start gap-2.5 text-sm">
-                  <span
-                    className={cn(
-                      "mt-1.5 h-2 w-2 shrink-0 rounded-full",
-                      n.read ? "bg-border" : "bg-gold-400"
-                    )}
-                    aria-hidden="true"
-                  />
-                  <div>
-                    <p className="font-semibold text-foreground">{n.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(n.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <DashboardNotifications initialItems={recentNotifications ?? []} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

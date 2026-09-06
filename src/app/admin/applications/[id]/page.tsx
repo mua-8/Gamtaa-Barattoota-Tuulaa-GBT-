@@ -1,8 +1,8 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { ApplicationDecision } from "./application-decision";
 
 export default async function ApplicationDetailsPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -106,20 +106,8 @@ export default async function ApplicationDetailsPage(props: { params: Promise<{ 
           </div>
 
           <div className="bg-white p-6 rounded-lg border shadow-sm">
-            <h2 className="text-xl font-bold text-forest-900 mb-4">Action</h2>
-            <div className="space-y-3">
-              <p className="text-sm text-gray-600 mb-4">Current Status: <strong className="uppercase">{app.status}</strong></p>
-              
-              {/* Note: Actions to be wired up to a Server Action */}
-              <form className="space-y-2">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                  <CheckCircle className="w-4 h-4 mr-2" /> Approve Application
-                </Button>
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
-                  <XCircle className="w-4 h-4 mr-2" /> Reject Application
-                </Button>
-              </form>
-            </div>
+            <h2 className="text-xl font-bold text-forest-900 mb-4">Application Decision</h2>
+            <ApplicationDecision applicationId={app.id} currentStatus={app.status} />
           </div>
         </div>
       </div>

@@ -18,7 +18,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/site/page-header";
 import { SectionHeading } from "@/components/site/section-heading";
+import { TestimonialsSection } from "@/components/site/testimonials-section";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -67,7 +69,13 @@ const CORE_VALUES = [
 
 export default async function AboutPage() {
   const supabase = await getSupabaseServerClient();
-  const { data: aboutData } = await supabase?.from("site_content").select("content").eq("page_slug", "about").single() || { data: null };
+
+  const { data: testimonialsData } = await supabase
+    ?.from("testimonials")
+    .select("*")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(6) || { data: [] };
 
   const defaultContent = {
     header: {
@@ -103,7 +111,7 @@ export default async function AboutPage() {
     },
   };
 
-  const content = aboutData?.content ? { ...defaultContent, ...aboutData.content } : defaultContent;
+  const content = await getSiteContent("about", defaultContent);
 
   return (
     <>
@@ -252,6 +260,9 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <TestimonialsSection testimonials={testimonialsData || []} />
     </>
   );
 }

@@ -16,12 +16,16 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
   async function onSubmit(formData: FormData) {
     setBusy(true);
     setError(null);
-    const result: AuthResult = await loginAction(formData);
-    if (!result.ok) {
-      setError(result.error);
+    try {
+      const result: AuthResult = await loginAction(formData);
+      if (!result.ok) {
+        setError(result.error);
+        setBusy(false);
+      }
+    } catch (err: any) {
+      setError(err?.message || "Failed to sign in. Please verify your internet connection.");
       setBusy(false);
     }
-    // On success the server action redirects.
   }
 
   return (

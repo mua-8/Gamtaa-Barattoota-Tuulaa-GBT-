@@ -132,8 +132,8 @@ export const IMPACT_STORIES: ImpactStory[] = [
     program: "Tuulaa Summer School",
     description:
       "When the school compound was under renovation, volunteers moved grade 5 math under the trees. Forty-one students sat on borrowed mats every morning — and 38 of them passed the regional assessment that autumn.",
-    image: "/images/programs/summer-education.jpg",
-    imageAlt: "Students learning in a simple rural classroom",
+    image: "/images/programs/summer-school-real.jpg",
+    imageAlt: "GBT volunteer teaching math at chalkboard to students in classroom",
   },
   {
     id: "first-generation-first-degree",
@@ -142,8 +142,8 @@ export const IMPACT_STORIES: ImpactStory[] = [
     program: "Bridge to University Mentorship",
     description:
       "Meron was the first in her family to consider university. Her GBT mentor helped her plan, prepare, and believe. In 2025 she enrolled to study agriculture — and last summer she returned as a mentor herself.",
-    image: "/images/programs/mentorship.jpg",
-    imageAlt: "A mentor guiding secondary students under a tree",
+    image: "/images/programs/mentorship-real.jpg",
+    imageAlt: "GBT instructor mentoring students in a classroom session",
   },
   {
     id: "village-logs-on",
@@ -152,7 +152,7 @@ export const IMPACT_STORIES: ImpactStory[] = [
     program: "Digital Horizons Literacy Lab",
     description:
       "Sixty residents, aged 12 to 62, completed their first computer course at the community hall. Three students now help run the hall's small open-access corner on market days.",
-    image: "/images/programs/digital-literacy.jpg",
-    imageAlt: "Learners practicing on laptops during a training",
+    image: "/images/programs/digital-literacy-real.jpg",
+    imageAlt: "Students working attentively at desks in a classroom with instructor",
   },
 ];

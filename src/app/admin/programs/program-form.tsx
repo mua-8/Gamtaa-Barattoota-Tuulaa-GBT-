@@ -10,8 +10,42 @@ import { upsertProgram } from "./actions";
 export function ProgramForm({ initialData }: { initialData?: any }) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>(initialData?.image_url || "");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files || e.target.files.length === 0) return;
+    setUploading(true);
+    setError(null);
+
+    try {
+      const file = e.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `prog_${Math.random().toString(36).substring(2, 11)}_${Date.now()}.${fileExt}`;
+
+      const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) throw new Error("Supabase client not initialized");
+
+      const { error: uploadError } = await supabase.storage
+        .from('program-images')
+        .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('program-images')
+        .getPublicUrl(fileName);
+
+      setImageUrl(data.publicUrl);
+    } catch (err: any) {
+      setError("Image upload failed: " + (err.message || err));
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,15 +60,18 @@ export function ProgramForm({ initialData }: { initialData?: any }) {
       fullDescription: formData.get("content.fullDescription"),
     };
 
+    const finalImageUrl = imageUrl.trim() || (formData.get("image_url") as string) || "";
+
     const data = {
       ...(initialData?.id ? { id: initialData.id } : {}),
       title: formData.get("title"),
       slug: formData.get("slug") || undefined, // undefined to let action generate it if empty
       short_description: formData.get("short_description"),
+      description: formData.get("short_description") || "",
       category: formData.get("category"),
       status: formData.get("status"),
       display_order: parseInt(formData.get("display_order") as string) || 0,
-      image_url: formData.get("image_url"),
+      image_url: finalImageUrl,
       content,
     };
 
@@ -136,18 +173,64 @@ export function ProgramForm({ initialData }: { initialData?: any }) {
             <p className="text-xs text-muted-foreground">Lower numbers appear first.</p>
           </div>
 
-          {/* Image URL */}
-          <div className="space-y-2 sm:col-span-2">
-            <label className="text-sm font-semibold">Featured Image URL</label>
-            <div className="flex gap-2">
-              <input 
-                name="image_url" 
-                defaultValue={initialData?.image_url} 
-                className="flex-1 rounded-md border p-2.5" 
-                placeholder="/images/programs/example.jpg"
-              />
+          {/* Featured Image */}
+          <div className="space-y-3 sm:col-span-2">
+            <label className="text-sm font-semibold">Featured Program Image</label>
+            
+            {/* Image Preview */}
+            {imageUrl && (
+              <div className="relative h-48 w-full max-w-md overflow-hidden rounded-lg border bg-gray-50 shadow-sm">
+                <img 
+                  src={imageUrl} 
+                  alt="Program image preview" 
+                  className="h-full w-full object-cover" 
+                />
+                <button
+                  type="button"
+                  onClick={() => setImageUrl("")}
+                  className="absolute top-2 right-2 rounded-full bg-black/70 px-2.5 py-1 text-xs text-white hover:bg-black/90 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                  Upload file from your phone / computer:
+                </label>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  disabled={uploading}
+                  onChange={handleImageUpload}
+                  className="block w-full text-sm text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-forest-100 file:text-forest-800 hover:file:bg-forest-200 cursor-pointer border rounded-md p-1.5 bg-white"
+                />
+              </div>
+              
+              <div className="flex-1">
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                  Or enter image URL / path:
+                </label>
+                <input 
+                  name="image_url" 
+                  value={imageUrl} 
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full rounded-md border p-2.5 text-sm bg-white" 
+                  placeholder="/images/programs/example.jpg or https://..."
+                />
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">Enter the path to the image or a full URL.</p>
+
+            {uploading && (
+              <p className="flex items-center gap-2 text-xs font-medium text-forest-700">
+                <Loader2 className="h-4 w-4 animate-spin" /> Uploading image to storage...
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Supports JPG, PNG, WEBP. Uploads directly to Supabase storage.
+            </p>
           </div>
 
           {/* Short Description */}

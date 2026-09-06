@@ -151,9 +151,14 @@ export default async function StudentProgramDetailPage({ params }: PageProps) {
               {PARTICIPANT_LABELS[participation.status] ?? participation.status}
             </p>
           ) : (
-            <form action={async (fd) => { await joinProgram(fd); }}>
+            <form
+              action={async (formData: FormData) => {
+                "use server";
+                await joinProgram(formData);
+              }}
+            >
               <input type="hidden" name="program_id" value={program.id} />
-              <Button type="submit" className="bg-gold-500 text-forest-950 hover:bg-gold-400">
+              <Button type="submit" className="bg-gold-500 text-forest-950 hover:bg-gold-400 font-bold">
                 Join This Program
               </Button>
             </form>

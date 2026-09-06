@@ -30,13 +30,34 @@ export async function loginAction(formData: FormData): Promise<AuthResult> {
 
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const next = String(formData.get("next") ?? "/student");
+  const nextParam = String(formData.get("next") ?? "");
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { ok: false, error: error.message };
 
+  let destination = "/student/dashboard";
+
+  // Only redirect to admin portal if explicitly requested via the admin portal link
+  if (nextParam && nextParam.startsWith("/admin")) {
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profile && (profile.role === "admin" || profile.role === "super_admin")) {
+        destination = nextParam;
+      } else {
+        destination = "/student/dashboard";
+      }
+    }
+  } else if (nextParam && nextParam.startsWith("/") && !nextParam.startsWith("/login")) {
+    destination = nextParam;
+  }
+
   revalidatePath("/", "layout");
-  redirect(next.startsWith("/") ? next : "/student");
+  redirect(destination.startsWith("/") ? destination : "/student/dashboard");
 }
 
 export async function registerAction(formData: FormData): Promise<AuthResult> {

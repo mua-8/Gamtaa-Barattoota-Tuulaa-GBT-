@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Mail, GraduationCap } from "lucide-react";
+import { ArrowRight, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/site/page-header";
 import { SectionHeading } from "@/components/site/section-heading";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { parseTeamMember } from "@/lib/team-util";
+import { FounderSection } from "@/components/site/founder-section";
 
 export const metadata: Metadata = {
   title: "Our Team",
   description:
-    "Meet the students who help plan, coordinate, and deliver GBT's educational and community service programs.",
+    "Meet the founder and students who help plan, coordinate, and deliver GBT's educational and community service programs.",
   alternates: { canonical: "/team" },
 };
 
@@ -52,16 +54,28 @@ function TeamMemberCard({ member }: { member: any }) {
 
 export default async function TeamPage() {
   const supabase = await getSupabaseServerClient();
-  const { data: teamMembers } = await supabase?.from("team_members").select("*").eq("is_active", true).order("display_order", { ascending: true }) || { data: [] };
+  const { data: rawMembers } = (await supabase
+    ?.from("team_members")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })) || { data: [] };
+
+  const parsed = (rawMembers || []).map(parseTeamMember);
+  const founder = parsed.find((m: any) => m.member_type === "founder") || null;
+  const activeMembers = parsed.filter((m: any) => m.member_type !== "founder");
 
   return (
     <>
       <PageHeader
         eyebrow="Our Team"
         title="Student leaders, community servants"
-        description="Meet the students who help plan, coordinate, and deliver GBT's educational and community service programs."
+        description="Meet the founder and university students who lead and coordinate GBT's educational and community initiatives."
       />
 
+      {/* 1. Founder Section (Placed directly ABOVE "Our Active Team Members") */}
+      {founder && <FounderSection founder={founder} />}
+
+      {/* 2. Our Active Team Members Section */}
       <section
         aria-labelledby="team-programs"
         className="py-16 sm:py-20 bg-forest-50/30"
@@ -73,9 +87,9 @@ export default async function TeamPage() {
             align="center"
           />
           
-          {teamMembers && teamMembers.length > 0 ? (
+          {activeMembers && activeMembers.length > 0 ? (
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {teamMembers.map((member) => (
+              {activeMembers.map((member: any) => (
                 <TeamMemberCard key={member.id} member={member} />
               ))}
             </div>
@@ -87,6 +101,7 @@ export default async function TeamPage() {
         </div>
       </section>
 
+      {/* 3. Closing Call To Action */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="font-display text-2xl font-bold text-forest-950 sm:text-3xl">
@@ -96,7 +111,7 @@ export default async function TeamPage() {
             Leadership roles at GBT are earned in the field — teaching, serving, and showing up.
             Your journey can start this holiday.
           </p>
-          <Button asChild size="lg" className="mt-7 bg-gold-500 text-forest-950 hover:bg-gold-400">
+          <Button asChild size="lg" className="mt-7 bg-gold-500 text-forest-950 hover:bg-gold-400 font-bold">
             <Link href="/join">
               Join GBT
               <ArrowRight className="h-4 w-4" aria-hidden="true" />

@@ -12,8 +12,10 @@ export interface TeamMember {
   name: string;
   position: string;
   group: TeamGroup;
+  member_type?: "founder" | "program_team";
   university: string;
   department: string;
+  intro?: string;
   bio: string;
   photo: string;
   socials: { label: string; href: string }[];

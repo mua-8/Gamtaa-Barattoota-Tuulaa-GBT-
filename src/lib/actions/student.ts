@@ -130,6 +130,7 @@ export async function submitServiceRecord(formData: FormData): Promise<StudentAc
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/student", "layout");
+  revalidatePath("/admin/service-records");
   return { ok: true };
 }
 
@@ -153,11 +154,11 @@ export async function joinProgram(formData: FormData): Promise<StudentActionResu
   return { ok: true };
 }
 
-export async function markNotificationRead(formData: FormData): Promise<StudentActionResult> {
+export async function markNotificationRead(arg: FormData | string): Promise<StudentActionResult> {
   const base = await requireUser();
   if (!base) return { ok: false, error: "You must be signed in to continue." };
   const { supabase, user } = base;
-  const id = String(formData.get("id") ?? "");
+  const id = typeof arg === "string" ? arg : String(arg.get("id") ?? "");
   const { error } = await supabase
     .from("notifications")
     .update({ read: true })
@@ -165,6 +166,8 @@ export async function markNotificationRead(formData: FormData): Promise<StudentA
     .eq("user_id", user.id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/student", "layout");
+  revalidatePath("/student/dashboard");
+  revalidatePath("/student/notifications");
   return { ok: true };
 }
 
@@ -179,6 +182,8 @@ export async function markAllNotificationsRead(): Promise<StudentActionResult> {
     .eq("read", false);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/student", "layout");
+  revalidatePath("/student/dashboard");
+  revalidatePath("/student/notifications");
   return { ok: true };
 }
 

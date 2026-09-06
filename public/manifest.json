@@ -1,0 +1,32 @@
+{
+  "name": "Gamtaa Barattoota Tuulaa",
+  "short_name": "GBT",
+  "description": "Gamtaa Barattoota Tuulaa brings university students together to transform the opportunities they receive into meaningful service for their communities.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a2318",
+  "theme_color": "#0a2318",
+  "categories": ["education", "social", "nonprofit"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

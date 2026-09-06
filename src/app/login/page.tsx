@@ -19,13 +19,28 @@ export default async function LoginPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const next = params.next ?? "/student";
 
-  // Already signed in? Go straight to the portal.
+  // Already signed in? Go straight to the appropriate portal.
   const supabase = await getSupabaseServerClient();
   if (supabase) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (user) redirect(next.startsWith("/") ? next : "/student/dashboard");
+    if (user) {
+      // Only navigate to admin portal if explicitly requested via the admin portal link
+      if (params.next && params.next.startsWith("/admin")) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        if (profile && (profile.role === "admin" || profile.role === "super_admin")) {
+          redirect(params.next);
+        }
+      } else if (params.next && params.next.startsWith("/") && params.next !== "/login" && !params.next.startsWith("/admin")) {
+        redirect(params.next);
+      }
+      redirect("/student/dashboard");
+    }
   }
   return (
     <AuthShell

@@ -33,7 +33,7 @@ export function Header() {
   // If window is resized to desktop, close menu
   useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth >= 1024 && menuOpen) {
+      if (window.innerWidth >= 1280 && menuOpen) {
         setMenuOpen(false);
       }
     };
@@ -46,22 +46,22 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 bg-forest-950 shadow-lg shadow-forest-950/30">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 xl:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
           
           {/* Block 1: Brand / Logo (Left) */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center shrink-0">
             <Link
               href="/"
               aria-label="Gamtaa Barattoota Tuulaa — home"
-              className="rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring min-w-0"
+              className="rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring shrink-0"
             >
-              <Logo variant="light" className="min-w-0" />
+              <Logo variant="light" className="shrink-0" />
             </Link>
           </div>
 
         {/* Block 2: Nav Links (Center) */}
-        <nav aria-label="Primary" className="hidden lg:flex items-center text-sm font-medium">
-          <ul className="flex items-center gap-5 xl:gap-8">
+        <nav aria-label="Primary" className="hidden xl:flex items-center text-xs 2xl:text-sm font-medium">
+          <ul className="flex items-center gap-3.5 2xl:gap-6">
             {NAV_LINKS.map((link) => {
               const active =
                 link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
@@ -71,10 +71,10 @@ export function Header() {
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "transition-colors duration-200 whitespace-nowrap",
+                      "transition-colors duration-200 whitespace-nowrap py-1 px-1.5 rounded-md hover:text-white",
                       active
                         ? "text-gold-400 font-bold"
-                        : "text-forest-100 hover:text-white"
+                        : "text-forest-100"
                     )}
                   >
                     {link.label}
@@ -86,17 +86,17 @@ export function Header() {
         </nav>
 
         {/* Block 3: Action Buttons (Right) */}
-        <div className="hidden lg:flex items-center gap-4 shrink-0">
+        <div className="hidden xl:flex items-center gap-3 2xl:gap-4 shrink-0">
           <Link 
-            href="/login" 
-            className="text-sm font-medium flex items-center gap-2 text-forest-100 hover:text-white transition-colors duration-200 hover:opacity-80 whitespace-nowrap"
+            href="/student/dashboard" 
+            className="text-xs 2xl:text-sm font-medium flex items-center gap-1.5 2xl:gap-2 text-forest-100 hover:text-white transition-colors duration-200 whitespace-nowrap py-1 px-2"
           >
             <LogIn className="h-4 w-4" aria-hidden="true" />
             Volunteer Portal
           </Link>
           <Link 
             href="/join" 
-            className="text-sm font-medium bg-gold-500 text-forest-950 px-5 py-2.5 rounded-full hover:bg-gold-400 transition-colors duration-200 whitespace-nowrap"
+            className="text-xs 2xl:text-sm font-semibold bg-gold-500 text-forest-950 px-4 py-2 2xl:px-5 2xl:py-2.5 rounded-full hover:bg-gold-400 transition-colors duration-200 whitespace-nowrap shadow-sm"
           >
             Join GBT
           </Link>
@@ -104,7 +104,7 @@ export function Header() {
 
         <button
           type="button"
-          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-forest-600 text-white lg:hidden select-none"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-forest-900 border border-forest-800 text-white xl:hidden select-none hover:bg-forest-800 transition-colors"
           style={{ touchAction: "manipulation" }}
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
@@ -119,7 +119,7 @@ export function Header() {
 
       {/* Mobile navigation (Rendered outside sticky header to fix iOS Safari fixed bug) */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-forest-950 lg:hidden overflow-hidden">
+        <div className="fixed inset-0 z-50 flex flex-col bg-forest-950 xl:hidden overflow-hidden">
           {/* Mobile Header inside the menu */}
           <div className="flex h-[72px] shrink-0 items-center justify-between px-4 border-b border-forest-800 shadow-sm">
             <Link
@@ -168,7 +168,7 @@ export function Header() {
               })}
               <li className="mt-8 flex flex-col gap-3 pt-6 border-t border-forest-800">
                 <Link
-                  href="/login"
+                  href="/student/dashboard"
                   onClick={() => setMenuOpen(false)}
                   className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-forest-700 bg-transparent px-5 py-4 text-lg font-bold text-forest-100 hover:bg-forest-900"
                 >

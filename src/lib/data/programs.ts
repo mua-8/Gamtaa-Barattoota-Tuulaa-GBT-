@@ -53,7 +53,7 @@ export const PROGRAMS: Program[] = [
     location: "Tuulaa, Oromia",
     date: "July – August 2026",
     status: "Active",
-    image: "/images/programs/summer-education.jpg",
+    image: "/images/programs/summer-school-real.jpg",
     imageAlt:
       "A GBT volunteer standing at a chalkboard teaching mathematics to students in a rural classroom",
     participants: "120 students · 18 volunteers",
@@ -76,9 +76,9 @@ export const PROGRAMS: Program[] = [
     location: "Tuulaa & nearby towns, Oromia",
     date: "Year-round · holiday intensives",
     status: "Active",
-    image: "/images/programs/mentorship.jpg",
+    image: "/images/programs/mentorship-real.jpg",
     imageAlt:
-      "Students studying and writing in a classroom during a GBT mentorship and tutoring session",
+      "Instructor in white shirt engaging and mentoring students in a classroom session",
     participants: "85 mentees · 40 mentors",
   },
   {
@@ -99,9 +99,9 @@ export const PROGRAMS: Program[] = [
     location: "Tuulaa community hall, Oromia",
     date: "September 2026",
     status: "Upcoming",
-    image: "/images/programs/digital-literacy.jpg",
+    image: "/images/programs/digital-literacy-real.jpg",
     imageAlt:
-      "Young learners gathered around laptops during a digital skills training session",
+      "Students working at desks in a classroom with teacher supervising",
     participants: "60 learners · 10 trainers",
   },
   {
@@ -122,7 +122,7 @@ export const PROGRAMS: Program[] = [
     location: "Tuulaa & surrounding kebeles",
     date: "Every holiday season",
     status: "Active",
-    image: "/images/programs/community-service.jpg",
+    image: "/images/programs/community-service-real.jpg",
     imageAlt:
       "A GBT volunteer writing on a chalkboard while students attentively follow the lesson",
     participants: "200+ volunteers per season",
@@ -145,7 +145,7 @@ export const PROGRAMS: Program[] = [
     location: "Schools & community centers, Oromia",
     date: "August 2026",
     status: "Active",
-    image: "/images/programs/tolerance.jpg",
+    image: "/images/programs/tolerance-real.jpg",
     imageAlt:
       "Students sitting together at desks engaging during a GBT community learning session",
     participants: "150 participants · 12 facilitators",
@@ -168,9 +168,9 @@ export const PROGRAMS: Program[] = [
     location: "Tuulaa, Oromia",
     date: "December 2026",
     status: "Upcoming",
-    image: "/images/programs/youth-empowerment.jpg",
+    image: "/images/programs/mentorship-real.jpg",
     imageAlt:
-      "Young students attentively sitting in a classroom during a GBT youth development session",
+      "Young students attentively engaged in a classroom workshop session",
     participants: "70 youth · 15 facilitators",
   },
   {
@@ -191,9 +191,9 @@ export const PROGRAMS: Program[] = [
     location: "Three kebeles around Tuulaa",
     date: "October 2025 – June 2026",
     status: "Completed",
-    image: "/images/gallery/library.jpg",
+    image: "/images/programs/summer-school-real.jpg",
     imageAlt:
-      "Children reading books at desks in a bright rural reading room with volunteers assisting",
+      "Children studying at desks in a classroom with volunteers assisting",
     participants: "90 students · 14 volunteers",
   },
   {
@@ -214,9 +214,9 @@ export const PROGRAMS: Program[] = [
     location: "Six secondary schools, West Shewa",
     date: "March 2026",
     status: "Completed",
-    image: "/images/gallery/training.jpg",
+    image: "/images/programs/digital-literacy-real.jpg",
     imageAlt:
-      "A trainer facilitating a career guidance session with engaged students raising hands",
+      "Students engaged in a learning and guidance session",
     participants: "6 schools · 700+ students reached",
   },
 ];

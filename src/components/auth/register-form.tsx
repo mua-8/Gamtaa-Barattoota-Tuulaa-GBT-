@@ -17,23 +17,28 @@ export function RegisterForm() {
   async function onSubmit(formData: FormData) {
     setBusy(true);
     setError(null);
-    const password = String(formData.get("password") ?? "");
-    const confirm = String(formData.get("confirm") ?? "");
-    if (password !== confirm) {
-      setError("Passwords do not match.");
+    try {
+      const password = String(formData.get("password") ?? "");
+      const confirm = String(formData.get("confirm") ?? "");
+      if (password !== confirm) {
+        setError("Passwords do not match.");
+        setBusy(false);
+        return;
+      }
+      const result: AuthResult = await registerAction(formData);
+      if (!result.ok) {
+        setError(result.error);
+        setBusy(false);
+        return;
+      }
+      if (result.needsVerification) {
+        setNeedsVerification(true);
+      }
+    } catch (err: any) {
+      setError(err?.message || "Failed to connect to authentication server. Please check your connection.");
+    } finally {
       setBusy(false);
-      return;
     }
-    const result: AuthResult = await registerAction(formData);
-    if (!result.ok) {
-      setError(result.error);
-      setBusy(false);
-      return;
-    }
-    if (result.needsVerification) {
-      setNeedsVerification(true);
-    }
-    setBusy(false);
   }
 
   if (needsVerification) {
