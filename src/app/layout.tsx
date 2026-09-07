@@ -28,6 +28,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  verification: {
+    google: "gYlty0ACwsi2CqNGXR9Z4yjjLN86HDupZQTAHpHSmPk",
+  },
   title: {
     default: "Gamtaa Barattoota Tuulaa (GBT) | From Education to Service",
     template: `%s | Gamtaa Barattoota Tuulaa (GBT)`,
