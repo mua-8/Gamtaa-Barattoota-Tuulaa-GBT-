@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createImpact, updateImpact, deleteImpact, type ImpactPayload } from "@/lib/actions/impact";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 export function ImpactForm({ initialData, id }: { initialData?: Partial<ImpactPayload>; id?: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -34,10 +36,18 @@ export function ImpactForm({ initialData, id }: { initialData?: Partial<ImpactPa
       let res;
       if (id) res = await updateImpact(id, formData);
       else res = await createImpact(formData);
-      if (res?.error) setError(res.error);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/impact");
+        router.refresh();
+      }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err.message || "An error occurred");
-    } finally {
       setLoading(false);
     }
   };
@@ -46,10 +56,23 @@ export function ImpactForm({ initialData, id }: { initialData?: Partial<ImpactPa
     if (!id) return;
     if (!confirm("Delete this metric?")) return;
     setLoading(true);
-    const res = await deleteImpact(id);
-    if (res?.error) setError(res.error);
-    setLoading(false);
-  }
+    try {
+      const res = await deleteImpact(id);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/impact");
+        router.refresh();
+      }
+    } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
+      setError(err.message || "An error occurred");
+      setLoading(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white p-6 rounded-lg border shadow-sm">

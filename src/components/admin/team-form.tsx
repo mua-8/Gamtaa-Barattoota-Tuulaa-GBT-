@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createTeamMember, updateTeamMember, deleteTeamMember, type TeamMemberPayload } from "@/lib/actions/team";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 export function TeamForm({ initialData, id }: { initialData?: Partial<TeamMemberPayload>; id?: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,8 +30,6 @@ export function TeamForm({ initialData, id }: { initialData?: Partial<TeamMember
     const { name, value, type } = e.target;
     if (type === "checkbox") {
       setFormData({ ...formData, [name]: (e.target as HTMLInputElement).checked });
-    } else if (type === "number") {
-      setFormData({ ...formData, [name]: parseInt(value) || 0 });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -48,10 +48,18 @@ export function TeamForm({ initialData, id }: { initialData?: Partial<TeamMember
         res = await createTeamMember(formData);
       }
       
-      if (res?.error) setError(res.error);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/team");
+        router.refresh();
+      }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err.message || "An error occurred");
-    } finally {
       setLoading(false);
     }
   };
@@ -61,10 +69,23 @@ export function TeamForm({ initialData, id }: { initialData?: Partial<TeamMember
     if (!confirm("Are you sure you want to delete this team member?")) return;
     
     setLoading(true);
-    const res = await deleteTeamMember(id);
-    if (res?.error) setError(res.error);
-    setLoading(false);
-  }
+    try {
+      const res = await deleteTeamMember(id);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/team");
+        router.refresh();
+      }
+    } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
+      setError(err.message || "An error occurred");
+      setLoading(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white p-6 rounded-lg border shadow-sm">

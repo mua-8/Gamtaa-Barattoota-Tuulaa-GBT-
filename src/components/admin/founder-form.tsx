@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { saveFounder, deleteTeamMember, type FounderPayload } from "@/lib/actions/team";
+import { useRouter } from "next/navigation";
 import { Loader2, Upload, Trash2, Eye, EyeOff } from "lucide-react";
 
 interface FounderFormProps {
@@ -14,6 +15,7 @@ interface FounderFormProps {
 }
 
 export function FounderForm({ initialData, id }: FounderFormProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,10 +88,18 @@ export function FounderForm({ initialData, id }: FounderFormProps) {
 
     try {
       const res = await saveFounder(formData);
-      if (res?.error) setError(res.error);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/team");
+        router.refresh();
+      }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err.message || "An error occurred while saving the founder profile.");
-    } finally {
       setLoading(false);
     }
   };
@@ -100,9 +110,22 @@ export function FounderForm({ initialData, id }: FounderFormProps) {
     if (!confirm("Are you sure you want to delete this founder profile?")) return;
 
     setLoading(true);
-    const res = await deleteTeamMember(targetId);
-    if (res?.error) setError(res.error);
-    setLoading(false);
+    try {
+      const res = await deleteTeamMember(targetId);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/team");
+        router.refresh();
+      }
+    } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
+      setError(err.message || "An error occurred while deleting the founder profile.");
+      setLoading(false);
+    }
   };
 
   return (

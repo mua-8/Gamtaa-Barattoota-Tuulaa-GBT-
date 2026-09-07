@@ -2,7 +2,6 @@
 
 import { getSupabaseServerClient } from "../supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export interface GalleryPayload {
   title?: string;
@@ -22,7 +21,7 @@ export async function createGalleryItem(payload: GalleryPayload) {
 
   revalidatePath("/admin/gallery");
   revalidatePath("/gallery");
-  redirect("/admin/gallery");
+  return { success: true };
 }
 
 export async function updateGalleryItem(id: string, payload: GalleryPayload) {
@@ -34,7 +33,7 @@ export async function updateGalleryItem(id: string, payload: GalleryPayload) {
 
   revalidatePath("/admin/gallery");
   revalidatePath("/gallery");
-  redirect("/admin/gallery");
+  return { success: true };
 }
 
 export async function deleteGalleryItem(id: string) {
@@ -46,5 +45,5 @@ export async function deleteGalleryItem(id: string) {
 
   revalidatePath("/admin/gallery");
   revalidatePath("/gallery");
-  redirect("/admin/gallery");
+  return { success: true };
 }

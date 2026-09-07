@@ -1,12 +1,18 @@
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-/**
- * Robust CMS content helper that attempts database reading/writing first,
- * with automatic fallback to Supabase Storage JSON persistence in the
- * `program-images` bucket.
- */
+// Fast in-memory cache with 60s TTL to prevent repeating roundtrips on every request
+const contentCache = new Map<string, { data: any; expiry: number }>();
+const CACHE_TTL_MS = 60 * 1000;
+
 export async function getSiteContent<T>(slug: string, fallback: T): Promise<T> {
+  const cached = contentCache.get(slug);
+  if (cached && cached.expiry > Date.now()) {
+    return { ...fallback, ...cached.data };
+  }
+
+  let content: any = null;
+
   // 1. Try reading from PostgreSQL table `site_content`
   try {
     const supabase = await getSupabaseServerClient();
@@ -18,29 +24,35 @@ export async function getSiteContent<T>(slug: string, fallback: T): Promise<T> {
         .maybeSingle();
 
       if (!error && data?.content) {
-        return { ...fallback, ...data.content };
+        content = data.content;
       }
     }
   } catch {
-    // Database table may not exist or query error; proceed to storage fallback
+    // Database table may not exist; proceed to storage fallback
   }
 
   // 2. Try reading from Supabase Storage JSON fallback
-  try {
-    const admin = getSupabaseAdminClient();
-    if (admin) {
-      const { data, error } = await admin.storage
-        .from("program-images")
-        .download(`site-content-${slug}.json`);
+  if (!content) {
+    try {
+      const admin = getSupabaseAdminClient();
+      if (admin) {
+        const { data, error } = await admin.storage
+          .from("program-images")
+          .download(`site-content-${slug}.json`);
 
-      if (!error && data) {
-        const text = await data.text();
-        const json = JSON.parse(text);
-        return { ...fallback, ...json };
+        if (!error && data) {
+          const text = await data.text();
+          content = JSON.parse(text);
+        }
       }
+    } catch {
+      // Storage fallback not found
     }
-  } catch {
-    // Storage fallback not found; proceed to default fallback
+  }
+
+  if (content) {
+    contentCache.set(slug, { data: content, expiry: Date.now() + CACHE_TTL_MS });
+    return { ...fallback, ...content };
   }
 
   return fallback;
@@ -50,6 +62,9 @@ export async function saveSiteContent(
   slug: string,
   content: any
 ): Promise<{ success?: boolean; error?: string }> {
+  // Clear cache immediately upon saving
+  contentCache.delete(slug);
+
   let savedToDb = false;
 
   // 1. Attempt writing to PostgreSQL table `site_content`
@@ -81,6 +96,7 @@ export async function saveSiteContent(
         });
 
       if (!storageError) {
+        contentCache.set(slug, { data: content, expiry: Date.now() + CACHE_TTL_MS });
         return { success: true };
       }
 
@@ -94,5 +110,10 @@ export async function saveSiteContent(
     }
   }
 
-  return savedToDb ? { success: true } : { error: "Failed to persist site content" };
+  if (savedToDb) {
+    contentCache.set(slug, { data: content, expiry: Date.now() + CACHE_TTL_MS });
+    return { success: true };
+  }
+
+  return { error: "Failed to persist site content" };
 }

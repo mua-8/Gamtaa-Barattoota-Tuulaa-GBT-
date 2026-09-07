@@ -7,7 +7,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export type AuthResult =
-  | { ok: true; needsVerification?: boolean }
+  | { ok: true; needsVerification?: boolean; destination?: string }
   | { ok: false; error: string };
 
 const NOT_CONFIGURED =
@@ -57,7 +57,7 @@ export async function loginAction(formData: FormData): Promise<AuthResult> {
   }
 
   revalidatePath("/", "layout");
-  redirect(destination.startsWith("/") ? destination : "/student/dashboard");
+  return { ok: true, destination: destination.startsWith("/") ? destination : "/student/dashboard" };
 }
 
 export async function registerAction(formData: FormData): Promise<AuthResult> {
@@ -86,7 +86,7 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
   revalidatePath("/", "layout");
   if (data.session) {
     // Email confirmation disabled in the Supabase project.
-    redirect("/join");
+    return { ok: true, destination: "/join" };
   }
   return { ok: true, needsVerification: true };
 }

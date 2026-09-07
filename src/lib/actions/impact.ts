@@ -2,7 +2,6 @@
 
 import { getSupabaseServerClient } from "../supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export interface ImpactPayload {
   metric_key: string;
@@ -18,7 +17,9 @@ export async function createImpact(payload: ImpactPayload) {
   if (error) return { error: error.message };
 
   revalidatePath("/admin/impact");
-  redirect("/admin/impact");
+  revalidatePath("/impact");
+  revalidatePath("/");
+  return { success: true };
 }
 
 export async function updateImpact(id: string, payload: ImpactPayload) {
@@ -29,7 +30,9 @@ export async function updateImpact(id: string, payload: ImpactPayload) {
   if (error) return { error: error.message };
 
   revalidatePath("/admin/impact");
-  redirect("/admin/impact");
+  revalidatePath("/impact");
+  revalidatePath("/");
+  return { success: true };
 }
 
 export async function deleteImpact(id: string) {
@@ -40,5 +43,7 @@ export async function deleteImpact(id: string) {
   if (error) return { error: error.message };
 
   revalidatePath("/admin/impact");
-  redirect("/admin/impact");
+  revalidatePath("/impact");
+  revalidatePath("/");
+  return { success: true };
 }

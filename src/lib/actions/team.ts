@@ -61,7 +61,7 @@ export async function createTeamMember(payload: TeamMemberPayload) {
 
   revalidatePath("/admin/team");
   revalidatePath("/team");
-  redirect("/admin/team");
+  return { success: true };
 }
 
 export async function updateTeamMember(id: string, payload: TeamMemberPayload) {
@@ -94,7 +94,7 @@ export async function updateTeamMember(id: string, payload: TeamMemberPayload) {
 
   revalidatePath("/admin/team");
   revalidatePath("/team");
-  redirect("/admin/team");
+  return { success: true };
 }
 
 export async function saveFounder(payload: FounderPayload) {
@@ -191,7 +191,7 @@ export async function saveFounder(payload: FounderPayload) {
   revalidatePath("/admin/team");
   revalidatePath("/team");
   revalidatePath("/");
-  redirect("/admin/team");
+  return { success: true };
 }
 
 export async function toggleFounderStatus(id: string, is_active: boolean) {
@@ -229,5 +229,5 @@ export async function deleteTeamMember(id: string) {
 
   revalidatePath("/admin/team");
   revalidatePath("/team");
-  redirect("/admin/team");
+  return { success: true };
 }

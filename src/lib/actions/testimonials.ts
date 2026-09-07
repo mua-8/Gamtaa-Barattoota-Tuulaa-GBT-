@@ -2,7 +2,6 @@
 
 import { getSupabaseServerClient } from "../supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export interface TestimonialPayload {
   name: string;
@@ -23,7 +22,7 @@ export async function createTestimonial(payload: TestimonialPayload) {
   revalidatePath("/admin/testimonials");
   revalidatePath("/");
   revalidatePath("/about");
-  redirect("/admin/testimonials");
+  return { success: true };
 }
 
 export async function updateTestimonial(id: string, payload: TestimonialPayload) {
@@ -36,7 +35,7 @@ export async function updateTestimonial(id: string, payload: TestimonialPayload)
   revalidatePath("/admin/testimonials");
   revalidatePath("/");
   revalidatePath("/about");
-  redirect("/admin/testimonials");
+  return { success: true };
 }
 
 export async function deleteTestimonial(id: string) {
@@ -49,5 +48,5 @@ export async function deleteTestimonial(id: string) {
   revalidatePath("/admin/testimonials");
   revalidatePath("/");
   revalidatePath("/about");
-  redirect("/admin/testimonials");
+  return { success: true };
 }

@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createGalleryItem, updateGalleryItem, deleteGalleryItem, type GalleryPayload } from "@/lib/actions/gallery";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 export function GalleryForm({ initialData, id }: { initialData?: Partial<GalleryPayload>; id?: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,10 +47,18 @@ export function GalleryForm({ initialData, id }: { initialData?: Partial<Gallery
       let res;
       if (id) res = await updateGalleryItem(id, formData);
       else res = await createGalleryItem(formData);
-      if (res?.error) setError(res.error);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/gallery");
+        router.refresh();
+      }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err.message || "An error occurred");
-    } finally {
       setLoading(false);
     }
   };
@@ -57,10 +67,23 @@ export function GalleryForm({ initialData, id }: { initialData?: Partial<Gallery
     if (!id) return;
     if (!confirm("Delete this image?")) return;
     setLoading(true);
-    const res = await deleteGalleryItem(id);
-    if (res?.error) setError(res.error);
-    setLoading(false);
-  }
+    try {
+      const res = await deleteGalleryItem(id);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/gallery");
+        router.refresh();
+      }
+    } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
+      setError(err.message || "An error occurred");
+      setLoading(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white p-6 rounded-lg border shadow-sm">

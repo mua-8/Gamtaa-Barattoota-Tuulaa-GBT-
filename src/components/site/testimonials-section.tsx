@@ -42,28 +42,32 @@ const DEFAULT_TESTIMONIALS: TestimonialItem[] = [
 ];
 
 export function TestimonialsSection({ testimonials }: { testimonials?: TestimonialItem[] }) {
-  // Use database testimonials if available; fill with defaults if fewer than 3
+  // If the admin has uploaded and published testimonials in the CMS, prioritize all database items
   const publishedFromDb = testimonials && testimonials.length > 0 ? testimonials : [];
   
-  // Combine db items with defaults to guarantee a full, balanced 3-card presentation
-  const combined = [...publishedFromDb];
-  for (const def of DEFAULT_TESTIMONIALS) {
-    if (combined.length >= 3) break;
-    // Don't duplicate if already present
-    if (!combined.some((t) => t.name.toLowerCase() === def.name.toLowerCase())) {
-      combined.push(def);
+  // If database has items, display all published items (up to 6); if fewer than 3, backfill with defaults
+  let items: TestimonialItem[] = [];
+  if (publishedFromDb.length >= 3) {
+    items = publishedFromDb.slice(0, 6);
+  } else if (publishedFromDb.length > 0) {
+    items = [...publishedFromDb];
+    for (const def of DEFAULT_TESTIMONIALS) {
+      if (items.length >= 3) break;
+      if (!items.some((t) => t.name.toLowerCase() === def.name.toLowerCase())) {
+        items.push(def);
+      }
     }
+  } else {
+    items = DEFAULT_TESTIMONIALS;
   }
 
-  const items = combined.slice(0, 3);
-
   return (
-    <section aria-labelledby="testimonials-heading" className="bg-cream py-20 sm:py-24 border-t border-forest-100/80">
+    <section aria-labelledby="testimonials-heading" className="relative bg-cream py-20 sm:py-24 border-t border-forest-100/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Voices of Our Community"
           title="What People Say About GBT"
-          description="Hear firsthand from university student volunteers and community members about the tangible impact of our service."
+          description="Hear firsthand from university student volunteers, parents, and community partners about the tangible impact of our programs."
         />
 
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

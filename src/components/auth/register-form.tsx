@@ -31,10 +31,17 @@ export function RegisterForm() {
         setBusy(false);
         return;
       }
+      if (result.destination) {
+        window.location.href = result.destination;
+        return;
+      }
       if (result.needsVerification) {
         setNeedsVerification(true);
       }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err?.message || "Failed to connect to authentication server. Please check your connection.");
     } finally {
       setBusy(false);

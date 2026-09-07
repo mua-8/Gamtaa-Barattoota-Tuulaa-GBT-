@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createTestimonial, updateTestimonial, deleteTestimonial, type TestimonialPayload } from "@/lib/actions/testimonials";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { createTestimonial, updateTestimonial, deleteTestimonial, type TestimonialPayload } from "@/lib/actions/testimonials";
 
 export function TestimonialForm({ initialData, id }: { initialData?: Partial<TestimonialPayload>; id?: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,10 +41,18 @@ export function TestimonialForm({ initialData, id }: { initialData?: Partial<Tes
       let res;
       if (id) res = await updateTestimonial(id, formData);
       else res = await createTestimonial(formData);
-      if (res?.error) setError(res.error);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/testimonials");
+        router.refresh();
+      }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err.message || "An error occurred");
-    } finally {
       setLoading(false);
     }
   };
@@ -51,10 +61,23 @@ export function TestimonialForm({ initialData, id }: { initialData?: Partial<Tes
     if (!id) return;
     if (!confirm("Delete this testimonial?")) return;
     setLoading(true);
-    const res = await deleteTestimonial(id);
-    if (res?.error) setError(res.error);
-    setLoading(false);
-  }
+    try {
+      const res = await deleteTestimonial(id);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/testimonials");
+        router.refresh();
+      }
+    } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
+      setError(err.message || "An error occurred");
+      setLoading(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white p-6 rounded-lg border shadow-sm">

@@ -21,8 +21,13 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
       if (!result.ok) {
         setError(result.error);
         setBusy(false);
+      } else if (result.destination) {
+        window.location.href = result.destination;
       }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err?.message || "Failed to sign in. Please verify your internet connection.");
       setBusy(false);
     }

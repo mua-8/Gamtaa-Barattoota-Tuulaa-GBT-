@@ -41,7 +41,7 @@ export async function createAnnouncement(payload: AnnouncementPayload) {
   revalidatePath("/admin/announcements");
   revalidatePath("/");
   revalidatePath("/announcements");
-  redirect("/admin/announcements");
+  return { success: true };
 }
 
 export async function updateAnnouncement(id: string, payload: AnnouncementPayload) {
@@ -73,7 +73,7 @@ export async function updateAnnouncement(id: string, payload: AnnouncementPayloa
   revalidatePath("/admin/announcements");
   revalidatePath("/");
   revalidatePath("/announcements");
-  redirect("/admin/announcements");
+  return { success: true };
 }
 
 export async function deleteAnnouncement(id: string) {
@@ -86,5 +86,5 @@ export async function deleteAnnouncement(id: string) {
   revalidatePath("/admin/announcements");
   revalidatePath("/");
   revalidatePath("/announcements");
-  redirect("/admin/announcements");
+  return { success: true };
 }

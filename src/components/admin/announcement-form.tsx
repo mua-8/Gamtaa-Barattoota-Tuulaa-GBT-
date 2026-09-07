@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createAnnouncement, updateAnnouncement, deleteAnnouncement, type AnnouncementPayload } from "@/lib/actions/announcements";
 import { extractAnnouncementImage } from "@/lib/announcements-util";
+import { useRouter } from "next/navigation";
 import { Loader2, Image as ImageIcon, Trash2 } from "lucide-react";
 
 export function AnnouncementForm({ initialData, id }: { initialData?: Partial<AnnouncementPayload> & { id?: string }; id?: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +22,7 @@ export function AnnouncementForm({ initialData, id }: { initialData?: Partial<An
 
   const [formData, setFormData] = useState<AnnouncementPayload>({
     title: initialData?.title || "",
-    content: initialParsed.cleanContent,
+    content: initialParsed.cleanContent || "",
     is_published: initialData?.is_published ?? true,
     image_url: initialData?.image_url || initialParsed.imageUrl || "",
   });
@@ -79,10 +81,18 @@ export function AnnouncementForm({ initialData, id }: { initialData?: Partial<An
       let res;
       if (id) res = await updateAnnouncement(id, payload);
       else res = await createAnnouncement(payload);
-      if (res?.error) setError(res.error);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/announcements");
+        router.refresh();
+      }
     } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
       setError(err.message || "An error occurred");
-    } finally {
       setLoading(false);
     }
   };
@@ -91,9 +101,22 @@ export function AnnouncementForm({ initialData, id }: { initialData?: Partial<An
     if (!id) return;
     if (!confirm("Are you sure you want to delete this announcement?")) return;
     setLoading(true);
-    const res = await deleteAnnouncement(id);
-    if (res?.error) setError(res.error);
-    setLoading(false);
+    try {
+      const res = await deleteAnnouncement(id);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else {
+        router.push("/admin/announcements");
+        router.refresh();
+      }
+    } catch (err: any) {
+      if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return;
+      }
+      setError(err.message || "An error occurred");
+      setLoading(false);
+    }
   };
 
   return (
