@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,9 +7,21 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/login", "/register", "/student/", "/admin/"],
+        disallow: [
+          "/admin",
+          "/admin/",
+          "/student",
+          "/student/",
+          "/login",
+          "/register",
+          "/forgot-password",
+          "/auth",
+          "/auth/",
+          "/api",
+          "/api/",
+        ],
       },
     ],
-    sitemap: "https://gbtuulaa.org/sitemap.xml",
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

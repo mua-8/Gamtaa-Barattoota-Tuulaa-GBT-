@@ -3,6 +3,12 @@ import { StudentShell } from "@/components/student/student-shell";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
+
 export default async function StudentLayout({
   children,
 }: {

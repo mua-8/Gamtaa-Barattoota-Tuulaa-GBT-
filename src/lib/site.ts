@@ -6,6 +6,9 @@
  * source of truth so the swap is contained to this file.
  */
 
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://gamtaa-barattoota-tuulaa-gbt.vercel.app";
+
 export const ORG = {
   name: "Gamtaa Barattoota Tuulaa",
   shortName: "GBT",

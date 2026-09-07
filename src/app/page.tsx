@@ -31,9 +31,29 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
+  title: "Gamtaa Barattoota Tuulaa (GBT) | From Education to Service",
   description:
-    "Gamtaa Barattoota Tuulaa brings university students together to transform the opportunities they receive into meaningful service for their communities.",
+    "Gamtaa Barattoota Tuulaa (GBT) unites university students to empower local communities in Tuulaa Town, Eastern Hararghe, Oromia, Ethiopia through free summer education, student mentorship, digital literacy, and volunteer service.",
+  keywords: [
+    "Gamtaa Barattoota Tuulaa",
+    "GBT",
+    "Tuulaa",
+    "student volunteers",
+    "community service",
+    "education",
+    "student mentorship",
+    "Oromia",
+    "Ethiopia",
+    "free summer school",
+    "Eastern Hararghe",
+  ],
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "Gamtaa Barattoota Tuulaa (GBT) | From Education to Service",
+    description:
+      "Gamtaa Barattoota Tuulaa (GBT) unites university students to empower local communities in Tuulaa Town, Eastern Hararghe, Oromia, Ethiopia through free summer education, student mentorship, digital literacy, and volunteer service.",
+    url: "/",
+  },
 };
 
 

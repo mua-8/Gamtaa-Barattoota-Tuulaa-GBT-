@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ProgramCard, StatusBadge } from "@/components/site/program-card";
-import type { Program, ProgramStatus } from "@/lib/data/programs";
+import { PROGRAMS, type Program, type ProgramStatus } from "@/lib/data/programs";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { ORG } from "@/lib/site";
 
@@ -58,13 +58,26 @@ function mapProgram(p: any): Program {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = await getSupabaseServerClient();
-  if (!supabase) return { title: "Program not found" };
+  let program: Program | undefined;
 
-  const { data } = await supabase.from("programs").select("*").eq("slug", slug).single();
-  if (!data) return { title: "Program not found" };
+  try {
+    const supabase = await getSupabaseServerClient();
+    if (supabase) {
+      const { data } = await supabase.from("programs").select("*").eq("slug", slug).maybeSingle();
+      if (data) {
+        program = mapProgram(data);
+      }
+    }
+  } catch {
+    // ignore
+  }
 
-  const program = mapProgram(data);
+  if (!program) {
+    program = PROGRAMS.find((p) => p.slug === slug);
+  }
+
+  if (!program) return { title: "Program not found" };
+
   return {
     title: program.title,
     description: program.shortDescription,
@@ -79,31 +92,57 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProgramDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const supabase = await getSupabaseServerClient();
-  if (!supabase) notFound();
+  let program: Program | undefined;
 
-  const { data } = await supabase.from("programs").select("*").eq("slug", slug).single();
-  if (!data) notFound();
+  try {
+    const supabase = await getSupabaseServerClient();
+    if (supabase) {
+      const { data } = await supabase.from("programs").select("*").eq("slug", slug).maybeSingle();
+      if (data) {
+        program = mapProgram(data);
+      }
+    }
+  } catch {
+    // ignore
+  }
 
-  const program = mapProgram(data);
+  if (!program) {
+    program = PROGRAMS.find((p) => p.slug === slug);
+  }
 
-  const { data: relatedData } = await supabase
-    .from("programs")
-    .select("*")
-    .neq("status", "draft")
-    .neq("slug", slug)
-    .limit(10);
+  if (!program) notFound();
 
   let related: Program[] = [];
-  if (relatedData) {
-    related = relatedData
-      .map(mapProgram)
-      .sort((a: Program, b: Program) => {
-        const aSame = a.category === program.category ? 0 : 1;
-        const bSame = b.category === program.category ? 0 : 1;
-        return aSame - bSame;
-      })
-      .slice(0, 3);
+  try {
+    const supabase = await getSupabaseServerClient();
+    if (supabase) {
+      const { data: relatedData } = await supabase
+        .from("programs")
+        .select("*")
+        .neq("status", "draft")
+        .neq("slug", slug)
+        .limit(10);
+
+      if (relatedData && relatedData.length > 0) {
+        related = relatedData
+          .map(mapProgram)
+          .sort((a: Program, b: Program) => {
+            const aSame = a.category === program!.category ? 0 : 1;
+            const bSame = b.category === program!.category ? 0 : 1;
+            return aSame - bSame;
+          })
+          .slice(0, 3);
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  if (related.length === 0) {
+    related = PROGRAMS.filter((p) => p.slug !== slug && p.category === program!.category).slice(0, 3);
+    if (related.length === 0) {
+      related = PROGRAMS.filter((p) => p.slug !== slug).slice(0, 3);
+    }
   }
 
   return (

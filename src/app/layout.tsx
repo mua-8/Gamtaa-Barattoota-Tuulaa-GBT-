@@ -4,7 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { PwaProvider } from "@/components/site/pwa-provider";
-import { ORG } from "@/lib/site";
+import { ORG, SITE_URL } from "@/lib/site";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -27,27 +27,32 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gbtuulaa.org"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `${ORG.name} — From Education to Service`,
-    template: `%s | ${ORG.name}`,
+    default: "Gamtaa Barattoota Tuulaa (GBT) | From Education to Service",
+    template: `%s | Gamtaa Barattoota Tuulaa (GBT)`,
   },
-  description: ORG.description,
+  description:
+    "Gamtaa Barattoota Tuulaa (GBT) unites university students to empower communities through education, mentorship, digital literacy, and volunteer service in Tuulaa Town, Eastern Hararghe, Oromia, Ethiopia.",
   keywords: [
     "Gamtaa Barattoota Tuulaa",
     "GBT",
+    "Tuulaa",
     "student volunteers",
     "community service",
-    "free education",
-    "mentorship",
+    "education",
+    "student mentorship",
     "Oromia",
     "Ethiopia",
+    "free summer education",
+    "digital literacy",
+    "Kombolcha",
   ],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: ORG.shortName ?? ORG.name,
+    title: "GBT",
   },
   icons: {
     apple: "/apple-touch-icon.png",
@@ -58,25 +63,93 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: ORG.name,
+    siteName: "Gamtaa Barattoota Tuulaa (GBT)",
     locale: "en_ET",
-    title: `${ORG.name} — From Education to Service`,
-    description: ORG.description,
+    url: SITE_URL,
+    title: "Gamtaa Barattoota Tuulaa (GBT) | From Education to Service",
+    description:
+      "Gamtaa Barattoota Tuulaa (GBT) unites university students to empower communities through free education, mentorship, digital literacy, and community service in Tuulaa Town, Eastern Hararghe, Ethiopia.",
     images: [
       {
-        url: "/images/hero-students.jpg",
-        width: 720,
-        height: 405,
-        alt: "GBT student volunteers at an outdoor community event",
+        url: `${SITE_URL}/images/hero-students.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Gamtaa Barattoota Tuulaa (GBT) student volunteers at an outdoor community event",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${ORG.name} — From Education to Service`,
-    description: ORG.description,
-    images: ["/images/hero-students.jpg"],
+    title: "Gamtaa Barattoota Tuulaa (GBT) | From Education to Service",
+    description:
+      "Gamtaa Barattoota Tuulaa (GBT) unites university students to empower communities through free education, mentorship, digital literacy, and community service in Tuulaa Town, Eastern Hararghe, Ethiopia.",
+    images: [`${SITE_URL}/images/hero-students.jpg`],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["NGO", "EducationalOrganization"],
+      "@id": `${SITE_URL}/#organization`,
+      name: "Gamtaa Barattoota Tuulaa",
+      alternateName: ["GBT", "Tuulaa Student Association"],
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/icons/icon-512x512.png`,
+        width: 512,
+        height: 512,
+      },
+      image: `${SITE_URL}/images/hero-students.jpg`,
+      description:
+        "Gamtaa Barattoota Tuulaa (GBT) brings university students together to transform the opportunities they receive into meaningful service for their communities in Tuulaa Town, Eastern Hararghe, Ethiopia.",
+      foundingDate: "2021",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Tuulaa Town",
+        addressLocality: "Kombolcha City",
+        addressRegion: "Eastern Hararghe, Oromia",
+        addressCountry: "ET",
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: ORG.phone,
+        contactType: "general inquiries",
+        email: ORG.email,
+        areaServed: "ET",
+        availableLanguage: ["Oromo", "Amharic", "English"],
+      },
+      sameAs: [
+        "https://facebook.com",
+        "https://instagram.com",
+        "https://linkedin.com",
+        "https://t.me",
+        "https://youtube.com",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Gamtaa Barattoota Tuulaa (GBT)",
+      publisher: {
+        "@id": `${SITE_URL}/#organization`,
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -84,6 +157,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${manrope.variable} ${fraunces.variable} h-full antialiased`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         <a
           href="#main-content"
